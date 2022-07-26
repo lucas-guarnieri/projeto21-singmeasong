@@ -1,4 +1,5 @@
 import { prisma } from "../../src/database.js";
+import { CreateRecommendationData } from "../../src/services/recommendationsService.js";
 
 const youtubeLinks = [
   "https://youtu.be/6gPKMa3Yrn8",
@@ -15,7 +16,19 @@ function getRandomNum(arrayLenght: number) {
 function createRecommendationData() {
   const randomIndex = getRandomNum(youtubeLinks.length);
   return {
-    name: `teste ${randomIndex}`,
+    name: `teste ${Math.floor(Math.random() * 500)}`,
     youtubeLink: youtubeLinks[randomIndex],
   };
 }
+async function putRecommendationOnDb(recData: CreateRecommendationData) {
+  await prisma.recommendation.create({
+    data: recData,
+  });
+}
+
+const recommendationFactory = {
+  createRecommendationData,
+  putRecommendationOnDb,
+};
+
+export default recommendationFactory;
