@@ -1,5 +1,5 @@
-import { prisma } from "../../src/database.js";
-import { CreateRecommendationData } from "../../src/services/recommendationsService.js";
+import { prisma } from "../../../src/database.js";
+import { CreateRecommendationData } from "../../../src/services/recommendationsService.js";
 
 const youtubeLinks = [
   "https://youtu.be/6gPKMa3Yrn8",
