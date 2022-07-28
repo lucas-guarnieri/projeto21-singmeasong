@@ -24,6 +24,9 @@ async function putRecommendationOnDb(recData: CreateRecommendationData) {
   await prisma.recommendation.create({
     data: recData,
   });
+  return prisma.recommendation.findUnique({
+    where: { name: recData.name },
+  });
 }
 
 const recommendationFactory = {
