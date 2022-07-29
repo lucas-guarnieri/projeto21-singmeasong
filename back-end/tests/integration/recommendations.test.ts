@@ -1,6 +1,10 @@
 import supertest from "supertest";
 
-import { deleteAllData } from "./factories/scenariosFactoriy.js";
+import {
+  deleteAllData,
+  scenaryDeleteNegative,
+  scenaryFullArray,
+} from "./factories/scenariosFactory.js";
 import { prisma } from "../../src/database.js";
 import recommendationFactory from "./factories/recommendationFactory.js";
 import app from "../../src/app.js";
@@ -51,9 +55,11 @@ describe("recommendations test suite", () => {
   });
 
   it("get recommendations", async () => {
+    await scenaryFullArray();
     const response = await supertest(app).get("/recommendations");
     const recommendationsArray = response.body;
     expect(recommendationsArray).not.toBeNull();
+    expect(recommendationsArray.length).toBe(7);
   });
 
   it("get recomemendations by id", async () => {
@@ -64,6 +70,26 @@ describe("recommendations test suite", () => {
     const recommendationName = response.body;
 
     expect(recommendationName.name).toBe(recommendationData.name);
+  });
+
+  it("get top 3 recommendatios", async () => {
+    await scenaryFullArray();
+    const response = await supertest(app).get(`/recommendations/top/3`);
+    const recommendationArray = response.body;
+    expect(recommendationArray.length).toBe(3);
+  });
+
+  it("get random recommendation", async () => {
+    await scenaryFullArray();
+    const response = await supertest(app).get(`/recommendations/random`);
+    const recommendation = response.body;
+    expect(response.body).not.toBeNull();
+  });
+
+  it("get random recommendation with empty database", async () => {
+    const response = await supertest(app).get(`/recommendations/random`);
+    const recommendation = response.body;
+    expect(response.status).toBe(404);
   });
 
   it("upvote existing recommendation", async () => {
@@ -102,26 +128,19 @@ it("downvote non-existing recommendation", async () => {
 });
 
 it("downvote existing recommendation with -5", async () => {
-  const recommendationData = {
-    name: `teste `,
-    youtubeLink: "https://youtu.be/pKwQlm-wldA",
-    score: -5,
-  };
-  await prisma.recommendation.create({
-    data: recommendationData,
-  });
-  const recommendation = await prisma.recommendation.findUnique({
-    where: { name: recommendationData.name },
-  });
+  const recommendation = await scenaryDeleteNegative();
   const response = await supertest(app).post(
     `/recommendations/${recommendation.id}/downvote`
   );
   expect(response.status).toBe(200);
+
   const recommendationCheck = await prisma.recommendation.findUnique({
     where: { id: recommendation.id },
   });
   expect(recommendationCheck).toBeNull();
 });
+
+//----------------
 
 async function insertTestRecommendation() {
   const recommendationData = recommendationFactory.createRecommendationData();
