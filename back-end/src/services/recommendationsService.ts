@@ -51,7 +51,6 @@ async function getTop(amount: number) {
 async function getRandom() {
   const random = Math.random();
   const scoreFilter = getScoreFilter(random);
-
   const recommendations = await getByScore(scoreFilter);
   if (recommendations.length === 0) {
     throw notFoundError();

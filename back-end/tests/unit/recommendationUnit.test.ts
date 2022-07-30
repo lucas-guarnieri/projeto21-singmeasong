@@ -4,6 +4,7 @@ import {
   CreateRecommendationData,
 } from "../../src/services/recommendationsService.js";
 import { recommendationRepository } from "../../src/repositories/recommendationRepository.js";
+import { Recommendation } from "@prisma/client";
 
 describe("recommendationservice test suite", () => {
   it("should create recommendation", async () => {
@@ -156,18 +157,15 @@ describe("recommendationservice test suite", () => {
     expect(recommendationRepository.findAll).toBeCalled();
   });
 
-  it("get random recommendation, empty database", async () => {
+  it("get erro in random recommendation, empty database", async () => {
     jest.spyOn(Math, "random").mockImplementationOnce((): any => {
       return 0.9;
     });
     jest.spyOn(Math, "floor").mockImplementationOnce((): any => {
       return 1;
     });
-    jest
-      .spyOn(recommendationRepository, "findAll")
-      .mockImplementationOnce((): any => {
-        return [];
-      });
+    jest.spyOn(recommendationRepository, "findAll").mockResolvedValueOnce([]);
+
     const promise = recommendationService.getRandom();
     expect(recommendationRepository.findAll).toBeCalled();
     expect(promise).rejects.toEqual({
@@ -177,7 +175,34 @@ describe("recommendationservice test suite", () => {
   });
 });
 
+describe("get unit test suite", () => {
+  it("get recommendations", async () => {
+    jest
+      .spyOn(recommendationRepository, "findAll")
+      .mockResolvedValueOnce([recommendationFullData]);
+
+    const response = await recommendationService.get();
+    expect(recommendationRepository.findAll).toBeCalled();
+    expect(response[0]).toEqual(recommendationFullData);
+  });
+
+  it("get top recommendations", async () => {
+    jest
+      .spyOn(recommendationRepository, "getAmountByScore")
+      .mockResolvedValueOnce([recommendationFullData]);
+
+    const response = await recommendationService.getTop(1);
+    expect(recommendationRepository.findAll).toBeCalled();
+    expect(response[0]).toEqual(recommendationFullData);
+  });
+});
 const recommendationData: CreateRecommendationData = {
   name: "test",
   youtubeLink: "https://youtu.be/QH2-TGUlwu4",
+};
+const recommendationFullData: Recommendation = {
+  id: 1,
+  name: "test",
+  youtubeLink: "https://youtu.be/QH2-TGUlwu4",
+  score: 10,
 };
