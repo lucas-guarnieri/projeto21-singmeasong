@@ -72,61 +72,49 @@ describe("recommendationservice upvote test suite", () => {
   });
 });
 
-// it("should downvote recommendation", async () => {
-//   jest
-//     .spyOn(recommendationRepository, "find")
-//     .mockImplementationOnce((): any => {
-//       return recommendationData;
-//     });
-//   jest
-//     .spyOn(recommendationRepository, "updateScore")
-//     .mockImplementationOnce((): any => {
-//       return { ...recommendationData, score: 10 };
-//     });
+describe("recommendationservice downvote test suite", () => {
+  beforeEach(() => jest.resetAllMocks());
+  it("should downvote recommendation", async () => {
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockResolvedValueOnce(recommendationFullData);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockResolvedValueOnce(recommendationFullData);
 
-//   await recommendationService.downvote(1);
-//   expect(recommendationRepository.find).toBeCalled();
-//   expect(recommendationRepository.updateScore).toBeCalled();
-// });
+    await recommendationService.downvote(recommendationFullData.id);
+    expect(recommendationRepository.find).toBeCalled;
+    expect(recommendationRepository.updateScore).toBeCalled;
+    jest.clearAllMocks();
+  });
 
-// it("should return error on downvote recommendation", async () => {
-//   jest
-//     .spyOn(recommendationRepository, "find")
-//     .mockImplementationOnce((): any => {
-//       return false;
-//     });
-//   jest
-//     .spyOn(recommendationRepository, "updateScore")
-//     .mockImplementationOnce((): any => {});
+  it("should return error on downvote recommendation", async () => {
+    jest.spyOn(recommendationRepository, "find").mockResolvedValueOnce(null);
 
-//   const promise = recommendationService.downvote(1);
-//   expect(promise).rejects.toEqual({
-//     message: "",
-//     type: "not_found",
-//   });
-// });
-//
-// it("should downvote recommendation and delete", async () => {
-//   jest
-//     .spyOn(recommendationRepository, "find")
-//     .mockImplementationOnce((): any => {
-//       return true;
-//     });
-//   jest
-//     .spyOn(recommendationRepository, "updateScore")
-//     .mockImplementationOnce((): any => {
-//       return { ...recommendationData, score: -6 };
-//     });
+    const promise = recommendationService.downvote(recommendationFullData.id);
+    expect(promise).rejects.toEqual({
+      message: "",
+      type: "not_found",
+    });
+  });
 
-//   jest
-//     .spyOn(recommendationRepository, "remove")
-//     .mockImplementationOnce((): any => {});
+  it("should downvote recommendation and delete", async () => {
+    jest
+      .spyOn(recommendationRepository, "find")
+      .mockResolvedValueOnce(recommendationFullData);
+    jest
+      .spyOn(recommendationRepository, "updateScore")
+      .mockResolvedValueOnce({ ...recommendationFullData, score: -10 });
 
-//   await recommendationService.downvote(1);
-//   expect(recommendationRepository.find).toBeCalled();
-//   expect(recommendationRepository.updateScore).toBeCalled();
-//   expect(recommendationRepository.remove).toBeCalled();
-// });
+    jest.spyOn(recommendationRepository, "remove").mockResolvedValueOnce(null);
+
+    await recommendationService.downvote(recommendationFullData.id);
+    expect(recommendationRepository.find).toBeCalled();
+    expect(recommendationRepository.updateScore).toBeCalled();
+    expect(recommendationRepository.remove).toBeCalled();
+  });
+});
+
 describe("recommendationservice get random test suite", () => {
   it("get random recommendation, gt", async () => {
     jest.spyOn(Math, "random").mockImplementationOnce((): any => {
