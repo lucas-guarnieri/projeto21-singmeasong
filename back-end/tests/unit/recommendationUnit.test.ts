@@ -6,7 +6,7 @@ import {
 import { recommendationRepository } from "../../src/repositories/recommendationRepository.js";
 import { Recommendation } from "@prisma/client";
 
-describe("recommendationservice test suite", () => {
+describe("recommendationservice create test suite", () => {
   it("should create recommendation", async () => {
     jest
       .spyOn(recommendationRepository, "findByName")
@@ -36,7 +36,9 @@ describe("recommendationservice test suite", () => {
       type: "conflict",
     });
   });
+});
 
+describe("recommendationservice upvote test suite", () => {
   it("should upvote recommendation", async () => {
     jest
       .spyOn(recommendationRepository, "find")
@@ -68,63 +70,64 @@ describe("recommendationservice test suite", () => {
       type: "not_found",
     });
   });
+});
 
-  // it("should downvote recommendation", async () => {
-  //   jest
-  //     .spyOn(recommendationRepository, "find")
-  //     .mockImplementationOnce((): any => {
-  //       return recommendationData;
-  //     });
-  //   jest
-  //     .spyOn(recommendationRepository, "updateScore")
-  //     .mockImplementationOnce((): any => {
-  //       return { ...recommendationData, score: 10 };
-  //     });
+// it("should downvote recommendation", async () => {
+//   jest
+//     .spyOn(recommendationRepository, "find")
+//     .mockImplementationOnce((): any => {
+//       return recommendationData;
+//     });
+//   jest
+//     .spyOn(recommendationRepository, "updateScore")
+//     .mockImplementationOnce((): any => {
+//       return { ...recommendationData, score: 10 };
+//     });
 
-  //   await recommendationService.downvote(1);
-  //   expect(recommendationRepository.find).toBeCalled();
-  //   expect(recommendationRepository.updateScore).toBeCalled();
-  // });
+//   await recommendationService.downvote(1);
+//   expect(recommendationRepository.find).toBeCalled();
+//   expect(recommendationRepository.updateScore).toBeCalled();
+// });
 
-  // it("should return error on downvote recommendation", async () => {
-  //   jest
-  //     .spyOn(recommendationRepository, "find")
-  //     .mockImplementationOnce((): any => {
-  //       return false;
-  //     });
-  //   jest
-  //     .spyOn(recommendationRepository, "updateScore")
-  //     .mockImplementationOnce((): any => {});
+// it("should return error on downvote recommendation", async () => {
+//   jest
+//     .spyOn(recommendationRepository, "find")
+//     .mockImplementationOnce((): any => {
+//       return false;
+//     });
+//   jest
+//     .spyOn(recommendationRepository, "updateScore")
+//     .mockImplementationOnce((): any => {});
 
-  //   const promise = recommendationService.downvote(1);
-  //   expect(promise).rejects.toEqual({
-  //     message: "",
-  //     type: "not_found",
-  //   });
-  // });
-  //
-  // it("should downvote recommendation and delete", async () => {
-  //   jest
-  //     .spyOn(recommendationRepository, "find")
-  //     .mockImplementationOnce((): any => {
-  //       return true;
-  //     });
-  //   jest
-  //     .spyOn(recommendationRepository, "updateScore")
-  //     .mockImplementationOnce((): any => {
-  //       return { ...recommendationData, score: -6 };
-  //     });
+//   const promise = recommendationService.downvote(1);
+//   expect(promise).rejects.toEqual({
+//     message: "",
+//     type: "not_found",
+//   });
+// });
+//
+// it("should downvote recommendation and delete", async () => {
+//   jest
+//     .spyOn(recommendationRepository, "find")
+//     .mockImplementationOnce((): any => {
+//       return true;
+//     });
+//   jest
+//     .spyOn(recommendationRepository, "updateScore")
+//     .mockImplementationOnce((): any => {
+//       return { ...recommendationData, score: -6 };
+//     });
 
-  //   jest
-  //     .spyOn(recommendationRepository, "remove")
-  //     .mockImplementationOnce((): any => {});
+//   jest
+//     .spyOn(recommendationRepository, "remove")
+//     .mockImplementationOnce((): any => {});
 
-  //   await recommendationService.downvote(1);
-  //   expect(recommendationRepository.find).toBeCalled();
-  //   expect(recommendationRepository.updateScore).toBeCalled();
-  //   expect(recommendationRepository.remove).toBeCalled();
-  // });
-
+//   await recommendationService.downvote(1);
+//   expect(recommendationRepository.find).toBeCalled();
+//   expect(recommendationRepository.updateScore).toBeCalled();
+//   expect(recommendationRepository.remove).toBeCalled();
+// });
+describe("recommendationservice get random test suite", () => {
   it("get random recommendation, gt", async () => {
     jest.spyOn(Math, "random").mockImplementationOnce((): any => {
       return 0.1;
@@ -175,7 +178,7 @@ describe("recommendationservice test suite", () => {
   });
 });
 
-describe("get unit test suite", () => {
+describe("recommendationservice get, getTop test suite", () => {
   it("get recommendations", async () => {
     jest
       .spyOn(recommendationRepository, "findAll")
@@ -196,6 +199,7 @@ describe("get unit test suite", () => {
     expect(response[0]).toEqual(recommendationFullData);
   });
 });
+
 const recommendationData: CreateRecommendationData = {
   name: "test",
   youtubeLink: "https://youtu.be/QH2-TGUlwu4",
