@@ -140,8 +140,6 @@ it("downvote existing recommendation with -5", async () => {
   expect(recommendationCheck).toBeNull();
 });
 
-//----------------
-
 async function insertTestRecommendation() {
   const recommendationData = recommendationFactory.createRecommendationData();
   await recommendationFactory.putRecommendationOnDb(recommendationData);
